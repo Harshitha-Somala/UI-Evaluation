@@ -21,10 +21,6 @@ def get_gemini_response(assistant, image):
     response = model.generate_content([assistant, image], stream=True)
     response.resolve()
     return response.text
-# def get_gemini_response(assistant, image, prompt):
-#     response = model.generate_content([assistant, image, prompt], stream=True)
-#     response.resolve()
-#     return response.text
  
     
 # streamlit app
@@ -42,10 +38,6 @@ def main():
         
     # Sidebar with an About section and file uploader
     with st.sidebar:
-        # st.subheader("About")   
-        # st.write(":blue[**Unlock-UI**]: Unveil design secrets effortlessly! Upload your UI images and dive into an interactive chat experience. \
-        #          Powered by Gemini-Pro-Vision, it comprehends every pixel, delivering accurate insights. Whether you're a designer or enthusiast, \
-        #          Unlock-UI unlocks the mysteries of UI/UX design elements.")
         
         # referred from https://github.com/wms31/streamlit-gemini/blob/main/app.py
 
@@ -60,7 +52,8 @@ def main():
         else:
             api_key = st.text_input('**Enter Google API Key..** ', type='password')
             if not (api_key.startswith('AI')):
-                st.warning('Please enter your API Key!', icon='⚠️')
+                st.warning(':red[**Please enter correct API Key!**]', icon='⚠️')
+                # raise ValueError("Invalid Google API key format. Please check your API key.")
             else:
                 st.success('Success!', icon='✅')
         os.environ['GOOGLE_API_KEY'] = api_key
@@ -102,35 +95,20 @@ def main():
     If the question is not related to image and a general conversation such as greetings, "Hi", "Thank you", "Let's meet soon", "see you", "bye", reply according to the greetings.
     If you don't know, then reply "Sorry! I didn't get you! Please change the question as related to image :neutral_face:"
     """
-
-    # set up chat input from users
-    # input = st.chat_input("Your curiosity unlocks insights! Shoot your questions about image here..")
     
     if submit:
         if image and api_key :
-            # st.session_state.chat_history.append({"role": "user", "content": input})
             with st.spinner("Generating response..."):
-                # result = get_gemini_response(assistant_work, image, input)
                 result = get_gemini_response(assistant_work, image)
-            # st.session_state.chat_history.append({"role": "assistant", "content": result})
-                
-                # # Display chat messages from history on app rerun
-                # for message in st.session_state.chat_history:
-                #     with st.chat_message(message["role"]):
-                #         st.markdown(message["content"])
             with st.chat_message("assistant"):
                 st.markdown(result)
-            # st.error(":warning: Please enter an API key and upload an image to get started!")
+
         elif image == "" and api_key == "":
             st.error(":warning: Please enter your API KEY and upload image!")
         elif image == "":
             st.error(":warning: Please upload your image!")
         else:
             st.error(":warning: Please enter your API KEY!")
-
-        # elif api_key == "":
-        #     st.info(":warning: Please enter your API KEY!")
-
 
 if __name__=="__main__":
     main()
